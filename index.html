@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juego: ¿Qué tanto me conoces?</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #a8edea, #fed6e3);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .quiz-container, .start-container {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    .quiz-container { display: none; }
+
+    h1 {
+      color: #ff4081;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #ff4081;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #e0306a;
+    }
+
+    .question {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background-color: #ffe4f2;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    .options button:hover {
+      background-color: #ffccdc;
+    }
+
+    .correct { background-color: #b2f2bb !important; }
+    .incorrect { background-color: #ffb3b3 !important; }
+
+    #score {
+      font-weight: bold;
+      color: #ff4081;
+      margin-top: 20px;
+    }
+
+    #next-btn {
+      margin-top: 15px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="start-container" id="start-screen">
+    <h1>💖 ¿Qué tanto me conoces? 💖</h1>
+    <p>¡Boo! Feliz Halloween mi amol jsjsjs decidi asustart 
+        con un pequeño examen jajaja, estaba aburrida.
+        Te amo mucho y suerte no se te olvide mandarme foto de tu 
+        resultado 💖
+    </p>
+    <button id="start-btn">Iniciar juego</button>
+  </div>
+
+ 
+  <div class="quiz-container" id="quiz-container">
+    <div id="question" class="question"></div>
+    <div id="options" class="options"></div>
+    <div id="score">Puntaje: 0</div>
+    <button id="next-btn">Siguiente</button>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "¿Cuál es mi color favorito?", options: ["Rosa", "Azul", "Negro", "Verde", "Morado"], answer: [3] },
+      { question: "¿Qué comida me gusta más?", options: ["Tacos", "Pizza", "Sushi", "Hamburguesas", "Nuggets"], answer: [2, 4] },
+      { question: "¿Cuál es mi estación favorita del año?", options: ["Primavera", "Verano", "Otoño", "Invierno"], answer: [3] },
+      { question: "¿Qué animal me gusta más?", options: ["Gato", "Perro", "Conejo", "Tortuga", "Hamster"], answer: [1] },
+      { question: "¿Qué tipo de contenido me gusta ver más?", options: ["Series románticas", "Películas de terror", "Videos graciosos", "Documentales de asesinos", "Música en vivo"], answer: [3] },
+      { question: "¿A qué hora suelo despertar?", options: ["4:30 am", "5 am", "6 am", "7 am", "8 am"], answer: [0] },
+      { question: "¿Qué materia disfruto más?", options: ["Matemáticas", "Programación", "Historia", "Aplicaciones Web", "Diseño"], answer: [3] },
+      { question: "¿Cuál es mi bebida favorita?", options: ["Café", "Té", "Agua", "Refresco", "Jugo de frutas"], answer: [1] },
+      { question: "¿Qué prefiero hacer en mi tiempo libre?", options: ["Dormir", "Salir con amigos", "Ver series", "Escuchar música", "Leer"], answer: [0] },
+      { question: "¿Cuál es mi sueño principal?", options: ["Viajar por el mundo", "Tener mi casa ideal", "Ser famosa", "Ayudar a mi familia", "Ser millonaria"], answer: [1] }
+    ];
+
+    const startBtn = document.getElementById("start-btn");
+    const startScreen = document.getElementById("start-screen");
+    const quizContainer = document.getElementById("quiz-container");
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const scoreEl = document.getElementById("score");
+    const nextBtn = document.getElementById("next-btn");
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    startBtn.addEventListener("click", () => {
+      startScreen.style.display = "none";
+      quizContainer.style.display = "block";
+      showQuestion();
+    });
+
+    function showQuestion() {
+      const q = questions[currentQuestion];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+      nextBtn.style.display = "none";
+
+      q.options.forEach((option, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = option;
+        btn.onclick = () => selectAnswer(index);
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(selected) {
+      const q = questions[currentQuestion];
+      const buttons = optionsEl.querySelectorAll("button");
+
+      buttons.forEach((btn, i) => {
+        btn.disabled = true;
+        if (q.answer.includes(i)) btn.classList.add("correct");
+        else if (i === selected) btn.classList.add("incorrect");
+      });
+
+      if (q.answer.includes(selected)) {
+        score++;
+        scoreEl.textContent = "Puntaje: " + score;
+      }
+
+      nextBtn.style.display = "block";
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        showQuestion();
+      } else {
+        questionEl.textContent = "🎉 ¡Terminaste el juego!";
+        optionsEl.innerHTML = `<p>Tu puntaje final es: <strong>${score} / ${questions.length}</strong></p>`;
+        nextBtn.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
